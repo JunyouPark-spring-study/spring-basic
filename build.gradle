@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+
+	implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
+
 	//lombok 관련 lib
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

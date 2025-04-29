@@ -2,11 +2,14 @@ package hello.core.scope;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import jakarta.inject.Provider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
+
 
 public class SingletonWithPrototypeTest1 {
     @Test
@@ -31,19 +34,22 @@ public class SingletonWithPrototypeTest1 {
 
         ClientBean clientBean2 = ac.getBean(ClientBean.class);
         int count2 = clientBean2.logic();
-        Assertions.assertThat(count2).isEqualTo(2);
+        Assertions.assertThat(count2).isEqualTo(1);
     }
 
     @Scope("singleton")
     static class ClientBean {
-        private final PrototypeBean prototypeBean; //생성 시점에 주입됨.
+
+        // DL(Dependency Lookup)시 사용, Spring에 의존적인 방법임
+        // 보통 Spring이 더 다양한 기능을 제공하므로, Spring의 ObjectProvider를 쓰는 게 좋다.
+//        @Autowired
+//        private ObjectProvider<PrototypeBean> prototypeBeanProvider;
 
         @Autowired
-        ClientBean(PrototypeBean prototypeBean) {
-            this.prototypeBean = prototypeBean;
-        }
+        private Provider<PrototypeBean> prototypeBeanProvider;
 
         public int logic() {
+            PrototypeBean prototypeBean = prototypeBeanProvider.get();
             prototypeBean.addCount();
             int count = prototypeBean.getCount();
             return count;
